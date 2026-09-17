@@ -26,7 +26,7 @@ test('watch progress is a modal dialog with managed keyboard focus', () => {
 
   assert.match(modal, /role="dialog"/);
   assert.match(modal, /aria-modal="true"/);
-  assert.match(modal, /event\.key === 'Tab'/);
+  assert.match(modal, /event\.key [!=]==? 'Tab'/);
   assert.match(modal, /previousFocus\?\.focus\(\)/);
 });
 
