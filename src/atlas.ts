@@ -27,12 +27,12 @@ export const UNIVERSE_META: Record<
   }
 > = {
   '616': {
-    label: 'Sacred MCU continuity',
+    label: 'MCU continuity',
     shortLabel: 'MCU',
     code: 'C-616',
     color: '#F5A623',
     core: '#FFD082',
-    glow: 'rgba(245, 166, 35, 0.42)',
+    glow: 'rgba(245, 166, 35, 0.34)',
   },
   '10005': {
     label: 'Legacy mutant continuity',
@@ -40,7 +40,7 @@ export const UNIVERSE_META: Record<
     code: 'C-10005',
     color: '#00A3FF',
     core: '#70CFFF',
-    glow: 'rgba(0, 163, 255, 0.42)',
+    glow: 'rgba(0, 163, 255, 0.34)',
   },
   spider: {
     label: 'Spider continuities',
@@ -48,7 +48,7 @@ export const UNIVERSE_META: Record<
     code: 'C-96283 / 120703',
     color: '#FF4D45',
     core: '#FFA19B',
-    glow: 'rgba(255, 77, 69, 0.42)',
+    glow: 'rgba(255, 77, 69, 0.34)',
   },
 };
 
@@ -127,3 +127,18 @@ export const matchesNodeSearch = (node: TimelineNode, query: string): boolean =>
     ...(node.keyVariants ?? []),
   ].some((value) => value.toLowerCase().includes(q));
 };
+
+export const getNavigableNodes = (
+  nodes: TimelineNode[],
+  query: string
+): TimelineNode[] => {
+  const chronological = getChronologicalNodes(nodes);
+  if (!query.trim()) return chronological;
+  return chronological.filter((node) => matchesNodeSearch(node, query));
+};
+
+export const toggleNodeSeen = (
+  nodes: TimelineNode[],
+  id: string
+): TimelineNode[] =>
+  nodes.map((node) => (node.id === id ? { ...node, seen: !node.seen } : node));
