@@ -128,3 +128,69 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #2D3342;
 }
+
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(245, 166, 35, 0.28);
+  color: #ffffff;
+}
+
+.atlas-grid {
+  background-image:
+    linear-gradient(rgba(20, 23, 33, 0.52) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 23, 33, 0.52) 1px, transparent 1px),
+    radial-gradient(circle at 1px 1px, rgba(82, 91, 108, 0.2) 1px, transparent 1.2px);
+  background-size: 44px 44px, 44px 44px, 22px 22px;
+  mask-image: linear-gradient(to bottom, black 0%, black 92%, transparent 100%);
+}
+
+.atlas-scroll {
+  scrollbar-gutter: stable;
+  overscroll-behavior-y: contain;
+}
+
+.atlas-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.atlas-scroll::-webkit-scrollbar-track {
+  background: #050609;
+}
+
+.atlas-scroll::-webkit-scrollbar-thumb {
+  background: #242936;
+  border: 2px solid #050609;
+  border-radius: 999px;
+}
+
+.atlas-scroll::-webkit-scrollbar-thumb:hover {
+  background: #343b4b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
