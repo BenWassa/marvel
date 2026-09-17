@@ -117,7 +117,14 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      if (target && ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(target.tagName)) return;
+      const isAtlasNodeButton = target?.tagName === 'BUTTON' && target.id.startsWith('atlas-node-');
+      if (
+        target &&
+        (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName) ||
+          (target.tagName === 'BUTTON' && !isAtlasNodeButton))
+      ) {
+        return;
+      }
 
       if (event.key === 'Escape') {
         if (isStatsOpen) {
@@ -134,7 +141,7 @@ export default function App() {
         handleNavigateNode('prev');
       } else if (event.key === 'ArrowRight') {
         handleNavigateNode('next');
-      } else if (event.key === ' ') {
+      } else if (event.key === ' ' && target?.tagName !== 'BUTTON') {
         event.preventDefault();
         handleToggleStatus(activeNodeId);
       }
