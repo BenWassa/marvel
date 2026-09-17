@@ -3,8 +3,9 @@ import { INITIAL_TIMELINE_NODES } from './data';
 import {
   ATLAS_ROUTES,
   AtlasRouteId,
+  getNavigableNodes,
   getRouteNodes,
-  matchesNodeSearch,
+  toggleNodeSeen,
 } from './atlas';
 import { TimelineNode, UniverseId } from './types';
 import { AtlasHeader } from './components/AtlasHeader';
@@ -74,10 +75,10 @@ export default function App() {
     [activeRouteId, nodes]
   );
 
-  const navigationNodes = useMemo(() => {
-    if (!searchQuery.trim()) return routeNodes;
-    return routeNodes.filter((node) => matchesNodeSearch(node, searchQuery));
-  }, [routeNodes, searchQuery]);
+  const navigationNodes = useMemo(
+    () => getNavigableNodes(nodes, searchQuery),
+    [nodes, searchQuery]
+  );
 
   const routeTraversedCount = routeNodes.filter((node) => node.seen).length;
   const traversedCount = nodes.filter((node) => node.seen).length;
@@ -89,9 +90,7 @@ export default function App() {
   const hasNext = currentIndex >= 0 && currentIndex < navigationNodes.length - 1;
 
   const handleToggleStatus = (id: string) => {
-    setNodes((current) =>
-      current.map((node) => (node.id === id ? { ...node, seen: !node.seen } : node))
-    );
+    setNodes((current) => toggleNodeSeen(current, id));
   };
 
   const handleBatchUpdateStatus = (universe: UniverseId | 'all', seen: boolean) => {
@@ -107,7 +106,6 @@ export default function App() {
 
     const nextIndex = direction === 'prev' ? currentIndex - 1 : currentIndex + 1;
     const nextNode = navigationNodes[nextIndex];
-
     if (nextNode) setActiveNodeId(nextNode.id);
   };
 
@@ -119,7 +117,7 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      if (target && ['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) return;
+      if (target && ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(target.tagName)) return;
 
       if (event.key === 'Escape') {
         if (isStatsOpen) {
@@ -130,7 +128,7 @@ export default function App() {
         return;
       }
 
-      if (!activeNodeId) return;
+      if (!activeNodeId || isStatsOpen) return;
 
       if (event.key === 'ArrowLeft') {
         handleNavigateNode('prev');
@@ -144,10 +142,10 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeNodeId, currentIndex, hasNext, hasPrev, isStatsOpen, navigationNodes]);
+  }, [activeNodeId, currentIndex, isStatsOpen, navigationNodes]);
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-[#050609] text-white">
+    <div className="atlas-app relative h-screen w-screen overflow-hidden">
       <AtlasHeader
         activeRouteId={activeRouteId}
         onRouteChange={handleRouteChange}
@@ -186,6 +184,10 @@ export default function App() {
         nodes={nodes}
         onBatchUpdateStatus={handleBatchUpdateStatus}
       />
+
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {activeNode ? 'Details opened for ' + activeNode.title + ', ' + activeNode.year + '.' : ''}
+      </div>
     </div>
   );
 }
