@@ -1,134 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --bg-obsidian: #07080B;
-  --bg-gradient: #0B0E17;
-  --grid-line: #141721;
+  --bg: #07090D;
+  --bg-translucent: rgba(7, 9, 13, 0.86);
+  --surface-1: #10141B;
+  --surface-2: #151A23;
+  --surface-3: #1A202B;
+  --border-subtle: #2B3341;
+  --border-strong: #465064;
 
-  --c-616-main: #F5A623;
-  --c-616-glow: #FFD082;
+  --text-primary: #F7F9FC;
+  --text-secondary: #C1C8D3;
+  --text-muted: #8F99AA;
 
-  --c-10005-main: #00A3FF;
-  --c-10005-glow: #70CFFF;
+  --accent-mcu: #F5A623;
+  --accent-mcu-core: #FFD082;
+  --accent-mcu-glow: rgba(245, 166, 35, 0.34);
+  --accent-mutant: #00A3FF;
+  --accent-mutant-core: #70CFFF;
+  --accent-spider: #FF4D45;
+  --accent-spider-core: #FFA19B;
 
-  --c-spider-main: #FF3B30;
-  --c-spider-glow: #FFA19B;
+  --route-line: #F5E6BD;
+  --route-border: rgba(245, 230, 189, 0.3);
+  --connection-line: #E5C5FF;
+  --connection-border: rgba(229, 197, 255, 0.34);
+  --connection-bg: rgba(229, 197, 255, 0.08);
 
-  --c-nexus: #E5C5FF;
+  --control-min-height: 44px;
 
-  --text-main: #FFFFFF;
-  --text-muted: #8B949E;
+  --bg-obsidian: var(--bg);
+  --bg-gradient: var(--surface-1);
+  --grid-line: #171C25;
+  --c-616-main: var(--accent-mcu);
+  --c-616-glow: var(--accent-mcu-core);
+  --c-10005-main: var(--accent-mutant);
+  --c-10005-glow: var(--accent-mutant-core);
+  --c-spider-main: var(--accent-spider);
+  --c-spider-glow: var(--accent-spider-core);
+  --c-nexus: var(--connection-line);
+  --text-main: var(--text-primary);
 
   --font-ui: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-obsidian);
-  color: var(--text-main);
-  font-family: var(--font-ui);
-}
-
-.font-mono-code {
-  font-family: var(--font-mono);
-}
-
-.font-ui-system {
-  font-family: var(--font-ui);
-}
-
-/* Astrometric coordinate grid */
-.canvas-grid-bg {
-  background-color: var(--bg-obsidian);
-  background-image: 
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-
-/* Secondary subtle major grid */
-.canvas-grid-major {
-  background-image: 
-    linear-gradient(rgba(45, 51, 66, 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(45, 51, 66, 0.4) 1px, transparent 1px);
-  background-size: 250px 250px;
-}
-
-/* SVG Line Filters and Styles */
-.path-616 {
-  stroke: var(--c-616-main);
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 7px var(--c-616-main));
-  fill: none;
-}
-
-.path-10005 {
-  stroke: var(--c-10005-main);
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 7px var(--c-10005-main));
-  fill: none;
-}
-
-.path-spider {
-  stroke: var(--c-spider-main);
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 7px var(--c-spider-main));
-  fill: none;
-}
-
-.path-nexus {
-  stroke: var(--c-nexus);
-  stroke-width: 2;
-  stroke-dasharray: 6 6;
-  filter: drop-shadow(0 0 8px var(--c-nexus));
-  fill: none;
-  animation: nexusFlow 20s linear infinite;
-}
-
-@keyframes nexusFlow {
-  from {
-    stroke-dashoffset: 200;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Temporal pulse animation */
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.pulse-nexus {
-  animation: pulseGlow 3s ease-in-out infinite;
-}
-
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #07080B;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1E222A;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #2D3342;
-}
-
 
 html,
 body,
@@ -141,47 +56,175 @@ body,
   box-sizing: border-box;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  -webkit-tap-highlight-color: transparent;
+}
+
 button,
 input,
 select {
   font: inherit;
 }
 
-::selection {
-  background: rgba(245, 166, 35, 0.28);
-  color: #ffffff;
+button,
+select {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+.font-mono-code {
+  font-family: var(--font-mono);
+}
+
+.font-ui-system {
+  font-family: var(--font-ui);
+}
+
+.atlas-app {
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+.atlas-header {
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(7, 9, 13, 0.94);
+  backdrop-filter: blur(20px);
+}
+
+.atlas-panel {
+  border: 1px solid var(--border-subtle);
+  background: rgba(12, 15, 21, 0.97);
+  backdrop-filter: blur(20px);
+}
+
+.atlas-control {
+  min-height: var(--control-min-height);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  outline: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.atlas-control:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+.atlas-control:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.82);
+  outline-offset: 2px;
+}
+
+.atlas-touch {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.atlas-progress-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.atlas-progress {
+  background: var(--accent-mcu);
+  transition: width 220ms ease;
+}
+
+.atlas-map-vignette {
+  background: radial-gradient(circle at 50% 0%, rgba(245, 166, 35, 0.07), transparent 62%);
 }
 
 .atlas-grid {
   background-image:
-    linear-gradient(rgba(20, 23, 33, 0.52) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 23, 33, 0.52) 1px, transparent 1px),
-    radial-gradient(circle at 1px 1px, rgba(82, 91, 108, 0.2) 1px, transparent 1.2px);
-  background-size: 44px 44px, 44px 44px, 22px 22px;
+    linear-gradient(rgba(30, 36, 48, 0.34) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 36, 48, 0.34) 1px, transparent 1px),
+    radial-gradient(circle at 1px 1px, rgba(104, 116, 136, 0.14) 1px, transparent 1.2px);
+  background-size: 48px 48px, 48px 48px, 24px 24px;
   mask-image: linear-gradient(to bottom, black 0%, black 92%, transparent 100%);
 }
 
 .atlas-scroll {
+  background: var(--bg);
   scrollbar-gutter: stable;
   overscroll-behavior-y: contain;
 }
 
-.atlas-scroll::-webkit-scrollbar {
+.atlas-node-label {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+::selection {
+  background: rgba(245, 166, 35, 0.28);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
-.atlas-scroll::-webkit-scrollbar-track {
-  background: #050609;
+::-webkit-scrollbar-track {
+  background: var(--bg);
 }
 
-.atlas-scroll::-webkit-scrollbar-thumb {
-  background: #242936;
-  border: 2px solid #050609;
+::-webkit-scrollbar-thumb {
+  background: #303949;
+  border: 2px solid var(--bg);
   border-radius: 999px;
 }
 
-.atlas-scroll::-webkit-scrollbar-thumb:hover {
-  background: #343b4b;
+::-webkit-scrollbar-thumb:hover {
+  background: #445066;
+}
+
+.path-616,
+.path-10005,
+.path-spider,
+.path-nexus {
+  fill: none;
+}
+
+.path-616 {
+  stroke: var(--accent-mcu);
+}
+
+.path-10005 {
+  stroke: var(--accent-mutant);
+}
+
+.path-spider {
+  stroke: var(--accent-spider);
+}
+
+.path-nexus {
+  stroke: var(--connection-line);
+  stroke-dasharray: 6 6;
+}
+
+@media (pointer: coarse) {
+  button,
+  select {
+    min-height: 44px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
