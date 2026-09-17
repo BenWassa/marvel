@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  --bg-obsidian: #07080B;
+  --bg-gradient: #0B0E17;
+  --grid-line: #141721;
+
+  --c-616-main: #F5A623;
+  --c-616-glow: #FFD082;
+
+  --c-10005-main: #00A3FF;
+  --c-10005-glow: #70CFFF;
+
+  --c-spider-main: #FF3B30;
+  --c-spider-glow: #FFA19B;
+
+  --c-nexus: #E5C5FF;
+
+  --text-main: #FFFFFF;
+  --text-muted: #8B949E;
+
+  --font-ui: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-obsidian);
+  color: var(--text-main);
+  font-family: var(--font-ui);
+}
+
+.font-mono-code {
+  font-family: var(--font-mono);
+}
+
+.font-ui-system {
+  font-family: var(--font-ui);
+}
+
+/* Astrometric coordinate grid */
+.canvas-grid-bg {
+  background-color: var(--bg-obsidian);
+  background-image: 
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Secondary subtle major grid */
+.canvas-grid-major {
+  background-image: 
+    linear-gradient(rgba(45, 51, 66, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 51, 66, 0.4) 1px, transparent 1px);
+  background-size: 250px 250px;
+}
+
+/* SVG Line Filters and Styles */
+.path-616 {
+  stroke: var(--c-616-main);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 7px var(--c-616-main));
+  fill: none;
+}
+
+.path-10005 {
+  stroke: var(--c-10005-main);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 7px var(--c-10005-main));
+  fill: none;
+}
+
+.path-spider {
+  stroke: var(--c-spider-main);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 7px var(--c-spider-main));
+  fill: none;
+}
+
+.path-nexus {
+  stroke: var(--c-nexus);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  filter: drop-shadow(0 0 8px var(--c-nexus));
+  fill: none;
+  animation: nexusFlow 20s linear infinite;
+}
+
+@keyframes nexusFlow {
+  from {
+    stroke-dashoffset: 200;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Temporal pulse animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.pulse-nexus {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #07080B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E222A;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2D3342;
+}
