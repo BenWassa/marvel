@@ -17,15 +17,14 @@ interface AtlasMapProps {
   searchQuery: string;
 }
 
-const ROW_HEIGHT = 122;
-const TOP_PADDING = 190;
-const BOTTOM_PADDING = 430;
+const TOP_PADDING = 206;
+const BOTTOM_PADDING = 420;
 
 const ERAS = [
-  { year: 2000, label: 'LEGACY FOUNDATIONS', years: '2000 — 2007' },
-  { year: 2008, label: 'MCU FORMATION', years: '2008 — 2015' },
-  { year: 2016, label: 'CONVERGENCE BUILDS', years: '2016 — 2019' },
-  { year: 2021, label: 'MULTIVERSE ERA', years: '2021 —' },
+  { year: 2000, label: 'Legacy foundations', years: '2000–2007' },
+  { year: 2008, label: 'MCU formation', years: '2008–2015' },
+  { year: 2016, label: 'Convergence builds', years: '2016–2019' },
+  { year: 2021, label: 'Multiverse era', years: '2021–' },
 ];
 
 const laneOrder: UniverseId[] = ['10005', '616', 'spider'];
@@ -35,7 +34,19 @@ const makeCurve = (
   b: { x: number; y: number }
 ): string => {
   const midY = (a.y + b.y) / 2;
-  return `M ${a.x} ${a.y} C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`;
+  return 'M ' + a.x + ' ' + a.y + ' C ' + a.x + ' ' + midY + ', ' + b.x + ' ' + midY + ', ' + b.x + ' ' + b.y;
+};
+
+const getLabelPositionClass = (universeId: UniverseId): string => {
+  if (universeId === 'spider') {
+    return 'right-[34px] top-1/2 -translate-y-1/2 text-right';
+  }
+
+  if (universeId === '616') {
+    return 'left-1/2 top-[38px] -translate-x-1/2 text-center sm:left-[34px] sm:top-1/2 sm:translate-x-0 sm:-translate-y-1/2 sm:text-left';
+  }
+
+  return 'left-[34px] top-1/2 -translate-y-1/2 text-left';
 };
 
 export const AtlasMap: React.FC<AtlasMapProps> = ({
@@ -62,6 +73,7 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
 
   const sortedNodes = useMemo(() => getChronologicalNodes(nodes), [nodes]);
   const route = getRoute(activeRouteId);
+  const rowHeight = width < 640 ? 136 : 122;
   const routeSet = useMemo(
     () => new Set(activeRouteId === 'all' ? sortedNodes.map((node) => node.id) : route.nodeIds),
     [activeRouteId, route.nodeIds, sortedNodes]
@@ -78,48 +90,50 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
 
     if (width < 980) {
       return {
-        '10005': width * 0.13,
+        '10005': width * 0.14,
         '616': width * 0.5,
-        spider: width * 0.87,
+        spider: width * 0.86,
       };
     }
 
     return {
-      '10005': width * 0.18,
+      '10005': width * 0.19,
       '616': width * 0.5,
-      spider: width * 0.82,
+      spider: width * 0.81,
     };
   }, [width]);
 
   const positions = useMemo(() => {
-    const map = new Map<string, { x: number; y: number }>();
+    const result = new Map<string, { x: number; y: number }>();
     sortedNodes.forEach((node, index) => {
-      map.set(node.id, {
+      result.set(node.id, {
         x: laneX[node.uni],
-        y: TOP_PADDING + index * ROW_HEIGHT,
+        y: TOP_PADDING + index * rowHeight,
       });
     });
-    return map;
-  }, [laneX, sortedNodes]);
+    return result;
+  }, [laneX, rowHeight, sortedNodes]);
 
-  const canvasHeight = TOP_PADDING + sortedNodes.length * ROW_HEIGHT + BOTTOM_PADDING;
+  const canvasHeight = TOP_PADDING + sortedNodes.length * rowHeight + BOTTOM_PADDING;
 
   const routePath = useMemo(() => {
     if (activeRouteId === 'all') return '';
+
     const routePositions = route.nodeIds
       .map((id) => positions.get(id))
       .filter((position): position is { x: number; y: number } => Boolean(position));
 
     if (routePositions.length < 2) return '';
 
-    let d = `M ${routePositions[0].x} ${routePositions[0].y}`;
+    let path = 'M ' + routePositions[0].x + ' ' + routePositions[0].y;
     for (let index = 1; index < routePositions.length; index += 1) {
       const previous = routePositions[index - 1];
       const next = routePositions[index];
       const midY = (previous.y + next.y) / 2;
-      d += ` C ${previous.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y}`;
+      path += ' C ' + previous.x + ' ' + midY + ', ' + next.x + ' ' + midY + ', ' + next.x + ' ' + next.y;
     }
-    return d;
+
+    return path;
   }, [activeRouteId, positions, route.nodeIds]);
 
   const selectedNode = nodes.find((node) => node.id === activeNodeId) ?? null;
@@ -131,7 +145,7 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
     const seen = new Set<string>();
 
     (selectedNode.connections ?? []).forEach((connection) => {
-      const key = `${selectedNode.id}:${connection.targetId}`;
+      const key = selectedNode.id + ':' + connection.targetId;
       if (!seen.has(key) && positions.has(connection.targetId)) {
         seen.add(key);
         pairs.push({ sourceId: selectedNode.id, targetId: connection.targetId });
@@ -141,7 +155,7 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
     nodes.forEach((node) => {
       (node.connections ?? []).forEach((connection) => {
         if (connection.targetId !== selectedNode.id) return;
-        const key = `${node.id}:${selectedNode.id}`;
+        const key = node.id + ':' + selectedNode.id;
         if (!seen.has(key) && positions.has(node.id)) {
           seen.add(key);
           pairs.push({ sourceId: node.id, targetId: selectedNode.id });
@@ -154,51 +168,72 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
 
   useEffect(() => {
     if (!activeNodeId) return;
-    const nodeElement = document.getElementById(`atlas-node-${activeNodeId}`);
-    if (!nodeElement) return;
-
+    const nodeElement = document.getElementById('atlas-node-' + activeNodeId);
     const scroller = scrollerRef.current;
-    if (!scroller) return;
+    if (!nodeElement || !scroller) return;
 
     const nodeTop = nodeElement.offsetTop;
-    const visibleTop = scroller.scrollTop + 110;
-    const visibleBottom = scroller.scrollTop + scroller.clientHeight - 250;
+    const visibleTop = scroller.scrollTop + 120;
+    const visibleBottom = scroller.scrollTop + scroller.clientHeight - 260;
 
     if (nodeTop < visibleTop || nodeTop > visibleBottom) {
       scroller.scrollTo({
         top: Math.max(0, nodeTop - scroller.clientHeight * 0.42),
-        behavior: 'smooth',
+        behavior: 'auto',
       });
     }
   }, [activeNodeId]);
 
-  const labelWidth = width < 640 ? 132 : width < 900 ? 175 : 230;
+  const labelWidth = width < 640 ? 124 : width < 900 ? 178 : 230;
+  const searchMatches = sortedNodes.filter((node) => matchesNodeSearch(node, searchQuery)).length;
 
   return (
     <div
       ref={scrollerRef}
-      className="atlas-scroll relative h-full w-full overflow-y-auto overflow-x-hidden bg-[#050609]"
+      className="atlas-scroll relative h-full w-full overflow-y-auto overflow-x-hidden"
+      role="region"
+      aria-label="Marvel screen continuity map"
+      aria-describedby="atlas-map-description"
     >
+      <p id="atlas-map-description" className="sr-only">
+        Titles are arranged vertically by release order and horizontally by screen continuity. Curated routes are highlighted without removing surrounding titles. Selecting a title opens its details.
+      </p>
+
+      <p className="sr-only" aria-live="polite">
+        {searchQuery.trim()
+          ? searchMatches + ' matching titles. Other titles remain available as context.'
+          : 'All ' + sortedNodes.length + ' titles are shown.'}
+      </p>
+
+      <section className="sr-only" aria-label="Titles in release order">
+        <h2>Marvel screen titles in release order</h2>
+        <ol>
+          {sortedNodes.map((node) => {
+            const meta = UNIVERSE_META[node.uni];
+            const inRoute = activeRouteId === 'all' || routeSet.has(node.id);
+            return (
+              <li key={'accessible-' + node.id}>
+                {node.year}. {node.title}. {meta.label}. {node.seen ? 'Watched.' : 'Not watched.'}
+                {activeRouteId !== 'all' ? (inRoute ? ' Included in the selected route.' : ' Outside the selected route.') : ''}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
       <div className="relative min-w-0" style={{ height: canvasHeight }}>
         <div className="pointer-events-none absolute inset-0 atlas-grid" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_50%_0%,rgba(245,166,35,0.08),transparent_62%)]" />
+        <div className="atlas-map-vignette pointer-events-none absolute inset-x-0 top-0 h-[520px]" aria-hidden="true" />
 
         <svg
           className="pointer-events-none absolute inset-0 h-full w-full"
-          viewBox={`0 0 ${width} ${canvasHeight}`}
+          viewBox={[0, 0, width, canvasHeight].join(' ')}
           preserveAspectRatio="none"
           aria-hidden="true"
         >
           <defs>
             <filter id="atlas-soft-glow" x="-80%" y="-80%" width="260%" height="260%">
-              <feGaussianBlur stdDeviation="6" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            <filter id="atlas-route-glow" x="-80%" y="-80%" width="260%" height="260%">
-              <feGaussianBlur stdDeviation="10" result="blur" />
+              <feGaussianBlur stdDeviation="5" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -212,22 +247,22 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
               <g key={universeId}>
                 <line
                   x1={laneX[universeId]}
-                  y1={136}
+                  y1={142}
                   x2={laneX[universeId]}
-                  y2={canvasHeight - BOTTOM_PADDING + 80}
+                  y2={canvasHeight - BOTTOM_PADDING + 88}
                   stroke={meta.color}
                   strokeWidth="1"
-                  strokeDasharray="2 10"
-                  opacity="0.22"
+                  strokeDasharray="3 11"
+                  opacity="0.3"
                 />
                 <line
                   x1={laneX[universeId]}
-                  y1={136}
+                  y1={142}
                   x2={laneX[universeId]}
-                  y2={canvasHeight - BOTTOM_PADDING + 80}
+                  y2={canvasHeight - BOTTOM_PADDING + 88}
                   stroke={meta.color}
-                  strokeWidth="8"
-                  opacity="0.018"
+                  strokeWidth="7"
+                  opacity="0.025"
                 />
               </g>
             );
@@ -236,12 +271,18 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
           {ERAS.map((era) => {
             const index = sortedNodes.findIndex((node) => Number.parseInt(node.year, 10) >= era.year);
             if (index < 0) return null;
-            const y = TOP_PADDING + index * ROW_HEIGHT - 62;
+            const y = TOP_PADDING + index * rowHeight - 66;
 
             return (
-              <g key={era.year}>
-                <line x1="20" x2={Math.max(20, width - 20)} y1={y} y2={y} stroke="#242936" opacity="0.5" />
-              </g>
+              <line
+                key={era.year}
+                x1="20"
+                x2={Math.max(20, width - 20)}
+                y1={y}
+                y2={y}
+                stroke="var(--border-subtle)"
+                opacity="0.75"
+              />
             );
           })}
 
@@ -250,17 +291,17 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
               <path
                 d={routePath}
                 fill="none"
-                stroke="#F5E6BD"
-                strokeWidth="12"
-                opacity="0.08"
-                filter="url(#atlas-route-glow)"
+                stroke="var(--route-line)"
+                strokeWidth="9"
+                opacity="0.07"
+                filter="url(#atlas-soft-glow)"
               />
               <path
                 d={routePath}
                 fill="none"
-                stroke="#F5E6BD"
-                strokeWidth="2.25"
-                opacity="0.78"
+                stroke="var(--route-line)"
+                strokeWidth="2.5"
+                opacity="0.9"
                 strokeLinecap="round"
               />
             </>
@@ -270,32 +311,22 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
             const source = positions.get(sourceId);
             const target = positions.get(targetId);
             if (!source || !target) return null;
-            const d = makeCurve(source, target);
 
             return (
-              <g key={`${sourceId}-${targetId}`}>
-                <path
-                  d={d}
-                  fill="none"
-                  stroke="#E5C5FF"
-                  strokeWidth="9"
-                  opacity="0.08"
-                  filter="url(#atlas-soft-glow)"
-                />
-                <path
-                  d={d}
-                  fill="none"
-                  stroke="#E5C5FF"
-                  strokeWidth="1.5"
-                  strokeDasharray="5 6"
-                  opacity="0.85"
-                />
-              </g>
+              <path
+                key={sourceId + '-' + targetId}
+                d={makeCurve(source, target)}
+                fill="none"
+                stroke="var(--connection-line)"
+                strokeWidth="1.75"
+                strokeDasharray="5 7"
+                opacity="0.9"
+              />
             );
           })}
         </svg>
 
-        <div className="pointer-events-none absolute inset-x-0 top-[106px] z-10">
+        <div className="pointer-events-none absolute inset-x-0 top-[106px] z-10" aria-hidden="true">
           {laneOrder.map((universeId) => {
             const meta = UNIVERSE_META[universeId];
             return (
@@ -305,13 +336,13 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
                 style={{ left: laneX[universeId] }}
               >
                 <div
-                  className="mx-auto mb-2 h-1.5 w-1.5 rounded-full"
-                  style={{ backgroundColor: meta.color, boxShadow: `0 0 10px ${meta.glow}` }}
+                  className="mx-auto mb-2 h-2 w-2 rounded-full"
+                  style={{ backgroundColor: meta.color }}
                 />
-                <div className="whitespace-nowrap font-mono-code text-[8px] font-bold uppercase tracking-[0.12em] text-[#A7AFBC] sm:text-[9px]">
+                <div className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)] sm:text-xs">
                   {meta.shortLabel}
                 </div>
-                <div className="hidden whitespace-nowrap font-mono-code text-[8px] uppercase tracking-[0.08em] text-[#515B6C] sm:block">
+                <div className="hidden whitespace-nowrap text-[11px] text-[var(--text-muted)] sm:block">
                   {meta.code}
                 </div>
               </div>
@@ -322,18 +353,19 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
         {ERAS.map((era) => {
           const index = sortedNodes.findIndex((node) => Number.parseInt(node.year, 10) >= era.year);
           if (index < 0) return null;
-          const y = TOP_PADDING + index * ROW_HEIGHT - 73;
+          const y = TOP_PADDING + index * rowHeight - 80;
 
           return (
             <div
               key={era.year}
               className="pointer-events-none absolute left-4 right-4 z-10 flex items-end justify-between"
               style={{ top: y }}
+              aria-hidden="true"
             >
-              <span className="bg-[#050609] pr-3 font-mono-code text-[9px] font-bold uppercase tracking-[0.16em] text-[#6F798A]">
+              <span className="bg-[var(--bg)] pr-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)] sm:text-xs">
                 {era.label}
               </span>
-              <span className="bg-[#050609] pl-3 font-mono-code text-[8px] uppercase tracking-[0.12em] text-[#464E5C]">
+              <span className="bg-[var(--bg)] pl-3 text-[11px] text-[var(--text-muted)] sm:text-xs">
                 {era.years}
               </span>
             </div>
@@ -348,51 +380,59 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
           const inRoute = activeRouteId === 'all' || routeSet.has(node.id);
           const matchesSearch = matchesNodeSearch(node, searchQuery);
           const isActive = activeNodeId === node.id;
-          const isDimmed = !inRoute || !matchesSearch;
-          const labelOnLeft = node.uni === 'spider';
           const watched = node.seen;
+
+          let opacity = 1;
+          if (!isActive && !matchesSearch) opacity = 0.2;
+          else if (!isActive && !inRoute) opacity = 0.42;
+
+          const routeLabel =
+            activeRouteId === 'all'
+              ? ''
+              : inRoute
+                ? ', included in selected route'
+                : ', outside selected route';
 
           return (
             <button
               type="button"
-              id={`atlas-node-${node.id}`}
+              id={'atlas-node-' + node.id}
               key={node.id}
               onClick={() => onSelectNode(node.id)}
-              aria-label={`${node.title}, ${node.year}${watched ? ', watched' : ''}`}
-              aria-pressed={isActive}
-              className="absolute z-20 h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-full outline-none transition-[opacity,transform] duration-300 focus-visible:ring-2 focus-visible:ring-white/70"
+              aria-label={node.title + ', ' + node.year + ', ' + meta.label + (watched ? ', watched' : ', not watched') + routeLabel}
+              aria-current={isActive ? 'true' : undefined}
+              data-search-match={matchesSearch ? 'true' : 'false'}
+              data-in-route={inRoute ? 'true' : 'false'}
+              className="atlas-node absolute z-20 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full outline-none transition-opacity duration-150 focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
               style={{
                 left: position.x,
                 top: position.y,
-                opacity: isDimmed ? 0.14 : 1,
+                opacity,
               }}
             >
               <span
-                className="absolute inset-0 m-auto h-9 w-9 rounded-full transition duration-300"
+                className="absolute inset-[4px] rounded-full transition-[background-color,box-shadow] duration-150"
                 style={{
-                  background: isActive ? meta.glow : 'transparent',
-                  filter: isActive ? 'blur(7px)' : undefined,
+                  backgroundColor: isActive ? meta.glow : 'transparent',
+                  boxShadow: isActive ? '0 0 18px ' + meta.glow : 'none',
                 }}
                 aria-hidden="true"
               />
 
               {node.nexus && (
                 <span
-                  className="absolute inset-[5px] rounded-full border opacity-80"
-                  style={{ borderColor: '#E5C5FF' }}
+                  className="absolute inset-[6px] rounded-full border"
+                  style={{ borderColor: 'var(--connection-line)' }}
                   aria-hidden="true"
                 />
               )}
 
               <span
-                className="absolute inset-[11px] rounded-full border-2 transition duration-300"
+                className="absolute inset-[12px] rounded-full border-2 transition-[background-color,box-shadow] duration-150"
                 style={{
                   borderColor: meta.color,
-                  backgroundColor: watched ? meta.core : '#080A0E',
-                  boxShadow:
-                    watched || isActive
-                      ? `0 0 ${isActive ? 18 : 10}px ${meta.glow}`
-                      : '0 0 0 transparent',
+                  backgroundColor: watched ? meta.core : 'var(--bg)',
+                  boxShadow: watched ? '0 0 10px ' + meta.glow : 'none',
                 }}
                 aria-hidden="true"
               >
@@ -402,20 +442,26 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
               </span>
 
               <span
-                className={`absolute top-1/2 -translate-y-1/2 rounded-lg border px-2.5 py-1.5 transition duration-300 sm:px-3 ${labelOnLeft ? 'right-[30px] text-right' : 'left-[30px] text-left'} ${isActive ? 'border-white/18 bg-[#10131A]/96 shadow-[0_8px_28px_rgba(0,0,0,0.48)]' : 'border-transparent bg-[#050609]/82'}`}
+                className={
+                  'atlas-node-label absolute rounded-lg border px-2.5 py-1.5 ' +
+                  getLabelPositionClass(node.uni) +
+                  (isActive
+                    ? ' border-[var(--border-strong)] bg-[var(--surface-2)] shadow-[0_8px_24px_rgba(0,0,0,0.45)]'
+                    : ' border-transparent bg-[color:var(--bg-translucent)]')
+                }
                 style={{ width: labelWidth }}
               >
-                <span className="block truncate text-[10px] font-semibold tracking-[0.025em] text-[#E9EDF4] sm:text-[11px]">
+                <span className="block truncate text-[11px] font-semibold leading-4 text-[var(--text-primary)] sm:text-xs">
                   {node.title}
                 </span>
-                <span className="mt-0.5 flex items-center gap-1.5 font-mono-code text-[8px] uppercase tracking-[0.1em] text-[#6F798A] sm:text-[9px]">
+                <span className="mt-0.5 flex items-center gap-1.5 text-[11px] leading-4 text-[var(--text-muted)]">
                   <span style={{ color: isActive ? meta.color : undefined }}>{node.year}</span>
-                  <span>·</span>
+                  <span aria-hidden="true">·</span>
                   <span className="truncate">{node.runtime}</span>
                   {node.nexus && (
                     <>
-                      <span>·</span>
-                      <span className="text-[#D8B7F2]">nexus</span>
+                      <span aria-hidden="true">·</span>
+                      <span className="text-[var(--connection-line)]">nexus</span>
                     </>
                   )}
                 </span>
@@ -425,8 +471,8 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
         })}
 
         {activeRouteId !== 'all' && (
-          <div className="pointer-events-none absolute left-1/2 top-[154px] z-10 -translate-x-1/2 rounded-full border border-[#F5E6BD]/20 bg-[#0C0D11]/90 px-3 py-1 font-mono-code text-[8px] uppercase tracking-[0.14em] text-[#CFC5AA]">
-            Curated viewing route
+          <div className="pointer-events-none absolute left-1/2 top-[162px] z-10 -translate-x-1/2 rounded-full border border-[var(--route-border)] bg-[var(--surface-2)] px-3 py-1.5 text-[11px] font-medium text-[var(--route-line)]">
+            Curated route overlay
           </div>
         )}
       </div>
