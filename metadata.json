@@ -1,6 +1,6 @@
 {
-  "name": "The Chronometric Loom",
-  "description": "Marvel Screen Continuity: The Chronometric Loom - an astrophysics-inspired cartography of cinematic timelines, nexus events, and multiverse routes.",
+  "name": "Marvel Screen Atlas",
+  "description": "Interactive Marvel screen-continuity cartography with release order, continuity lanes, curated viewing routes, context links, and per-user watch state.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": []
 }
