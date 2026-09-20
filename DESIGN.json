@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-17T00:00:00.000Z",
+  "title": "Design System: Marvel Screen Atlas",
+  "extensions": {
+    "colorMeta": {
+      "bg": { "role": "neutral", "displayName": "Obsidian", "canonical": "#07090D", "tonalRamp": ["#050609", "#07090D", "#0B0E14", "#10141B", "#151A23", "#1A202B", "#2B3341", "#465064"] },
+      "signal-amber": { "role": "primary", "displayName": "Signal Amber", "canonical": "#F5A623", "tonalRamp": ["#4A2E05", "#7A4A08", "#B06F0D", "#D68E17", "#F5A623", "#FFC466", "#FFD082", "#FFE3B0"] },
+      "ion-blue": { "role": "secondary", "displayName": "Ion Blue", "canonical": "#00A3FF", "tonalRamp": ["#00263D", "#003D63", "#00568C", "#0079C2", "#00A3FF", "#43BCFF", "#70CFFF", "#A6E2FF"] },
+      "web-red": { "role": "tertiary", "displayName": "Web Red", "canonical": "#FF4D45", "tonalRamp": ["#450E0B", "#6E1714", "#9C221D", "#D03327", "#FF4D45", "#FF7A72", "#FFA19B", "#FFC7C3"] },
+      "phase-violet": { "role": "tertiary", "displayName": "Phase Violet", "canonical": "#E5C5FF", "tonalRamp": ["#2E1E42", "#4A2F68", "#6C458F", "#9269B8", "#B98FDB", "#D3B4F0", "#E5C5FF", "#F2E1FF"] },
+      "route-gold": { "role": "accent", "displayName": "Route Gold", "canonical": "#F5E6BD", "tonalRamp": ["#3D3418", "#645527", "#8C7737", "#B79B52", "#D4BE85", "#F5E6BD", "#F9EFD6", "#FCF7EC"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Top-level wordmark and instrument-panel signage. Wide tracking, uppercase-set." },
+      "title": { "displayName": "Title", "purpose": "Title-card names inside the dock. The one cinematic type moment." },
+      "body": { "displayName": "Body", "purpose": "Descriptions and context copy, capped at 65-75ch." },
+      "label": { "displayName": "Label", "purpose": "Badges, stat captions, section eyebrows. Always paired with a border or fill." },
+      "data": { "displayName": "Data", "purpose": "Counts, universe codes, runtimes - anything that is a measurement, not a sentence." }
+    },
+    "shadows": [
+      { "name": "dock-lift", "value": "0 -20px 60px rgba(0,0,0,0.58)", "purpose": "The bottom title-detail dock rising from the bottom edge." },
+      { "name": "modal-lift", "value": "0 22px 70px rgba(0,0,0,0.72)", "purpose": "The stats modal, centered and heavier since it fully interrupts the map." },
+      { "name": "accent-glow-sm", "value": "0 0 10px var(--accent-glow)", "purpose": "Status dots and small selection indicators, keyed to the active continuity color." },
+      { "name": "accent-glow-lg", "value": "0 0 24px var(--accent-glow)", "purpose": "Poster frames and larger selection states, keyed to the active continuity color." }
+    ],
+    "motion": [
+      { "name": "control-transition", "value": "150ms ease", "purpose": "Background/border/color transitions on .atlas-control hover and focus." },
+      { "name": "dock-slide", "value": "200ms ease, transform", "purpose": "The dock's translate-y entrance/exit from the bottom edge." },
+      { "name": "progress-fill", "value": "220ms ease, width", "purpose": "The header progress bar filling as watch state changes." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (Mark Watched)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The dock's main CTA - fills with the active continuity color, flips text to obsidian for contrast.",
+      "html": "<button class=\"ds-btn-primary\" aria-pressed=\"false\"><span class=\"ds-btn-primary-check\"></span>Mark watched</button>",
+      "css": ".ds-btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #F5A623; background: #F5A623; color: #07090D; font: 600 14px/1.3 Inter, sans-serif; transition: background-color 150ms ease, border-color 150ms ease; } .ds-btn-primary-check { display: inline-flex; width: 20px; height: 20px; border-radius: 999px; border: 1px solid #071014; background: #071014; } .ds-btn-primary:hover { background: #FFC466; border-color: #FFC466; } .ds-btn-primary:focus-visible { outline: 2px solid rgba(255,255,255,0.82); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button (Nav Control)",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Shared control shell for every button/select/input that is not the primary CTA - the .atlas-control pattern.",
+      "html": "<button class=\"ds-btn-ghost\">Previous</button>",
+      "css": ".ds-btn-ghost { min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #2B3341; background: #10141B; color: #F7F9FC; font: 500 14px/1.3 Inter, sans-serif; transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease; } .ds-btn-ghost:hover { background: #151A23; border-color: #465064; } .ds-btn-ghost:disabled { opacity: 0.3; cursor: default; } .ds-btn-ghost:focus-visible { outline: 2px solid rgba(255,255,255,0.82); outline-offset: 2px; }"
+    },
+    {
+      "name": "Continuity Badge",
+      "kind": "chip",
+      "refersTo": "badge-continuity",
+      "description": "Translucent tinted badge naming a node's continuity. Border and fill derive from the same color at low alpha.",
+      "html": "<span class=\"ds-badge\">MCU continuity</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font: 600 11px/1.3 Inter, sans-serif; color: #FFD082; background: rgba(245,166,35,0.094); border: 1px solid rgba(245,166,35,0.4); }"
+    },
+    {
+      "name": "Connection Badge",
+      "kind": "chip",
+      "description": "Fixed Phase Violet badge marking a cross-continuity nexus link - the one badge color that never varies by node.",
+      "html": "<span class=\"ds-badge-nexus\">Cross-continuity connection</span>",
+      "css": ".ds-badge-nexus { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font: 600 11px/1.3 Inter, sans-serif; color: #E5C5FF; background: rgba(229,197,255,0.08); border: 1px solid rgba(229,197,255,0.34); }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": "card-stat",
+      "description": "Flat metric tile inside the watch-progress modal. No shadow - depth comes from the border and the parent modal's own lift.",
+      "html": "<div class=\"ds-card-stat\"><div class=\"ds-card-stat-label\">Watched</div><div class=\"ds-card-stat-value\">12/48</div><div class=\"ds-card-stat-sub\">25% complete</div></div>",
+      "css": ".ds-card-stat { border-radius: 12px; border: 1px solid #2B3341; background: #10141B; padding: 16px; } .ds-card-stat-label { font: 500 12px/1.3 Inter, sans-serif; color: #8F99AA; } .ds-card-stat-value { margin-top: 4px; font: 600 24px/1.2 Inter, sans-serif; color: #F7F9FC; } .ds-card-stat-sub { margin-top: 4px; font: 400 14px/1.4 Inter, sans-serif; color: #C1C8D3; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "description": "Shared .atlas-control input shell with an inset leading icon and trailing clear action.",
+      "html": "<label class=\"ds-search\"><input class=\"ds-search-field\" placeholder=\"Search titles, years, continuity…\" /></label>",
+      "css": ".ds-search { position: relative; display: flex; align-items: center; } .ds-search-field { width: 100%; height: 44px; padding: 0 40px 0 36px; border-radius: 12px; border: 1px solid #2B3341; background: #10141B; color: #F7F9FC; font: 400 14px/1.3 Inter, sans-serif; outline: none; transition: background-color 150ms ease, border-color 150ms ease; } .ds-search-field::placeholder { color: #8F99AA; } .ds-search-field:hover { background: #151A23; border-color: #465064; } .ds-search-field:focus-visible { outline: 2px solid rgba(255,255,255,0.82); outline-offset: 2px; }"
+    },
+    {
+      "name": "The Dock (floating detail panel)",
+      "kind": "custom",
+      "refersTo": "panel-float",
+      "description": "Signature component: a floating panel that slides up from off-screen to show one title's full detail, carrying a 1px top bar in the active continuity color.",
+      "html": "<section class=\"ds-dock\"><div class=\"ds-dock-accent\"></div><div class=\"ds-dock-body\"><h2 class=\"ds-dock-title\">Avengers: Endgame</h2><p class=\"ds-dock-desc\">The culmination of the Infinity Saga.</p></div></section>",
+      "css": ".ds-dock { border-radius: 16px; border: 1px solid #2B3341; background: rgba(12,15,21,0.97); backdrop-filter: blur(20px); box-shadow: 0 -20px 60px rgba(0,0,0,0.58); overflow: hidden; max-width: 960px; } .ds-dock-accent { height: 4px; width: 100%; background: #F5A623; } .ds-dock-body { padding: 24px; } .ds-dock-title { font: 700 28px/1.15 Inter, sans-serif; letter-spacing: -0.025em; color: #fff; margin: 0; } .ds-dock-desc { margin-top: 12px; font: 400 14px/1.5 Inter, sans-serif; color: #C1C8D3; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Chronometric Loom",
+    "overview": "Marvel's screen continuities are threads - release-order threads, in-universe threads, cross-continuity nexus threads - and this system's job is to weave them into something a viewer can actually read at a glance. Every surface is an instrument reading, not a poster: obsidian panels, hairline borders, monospace data marks, all tuned for exactness. But the instrument is reading Marvel, so the precision carries color and light the way a control panel carries warning lamps and status glow - Signal Amber, Ion Blue, Web Red, Phase Violet - each one a real distinction in the data, never a decoration laid on top of it. This system explicitly rejects the streaming-service browse grid (no poster walls, no algorithmic rows), gamified fan-tracker chrome (no badges, XP bars, or streak counters - progress reads as a record, not a score), and the cluttered wiki/forum layout (no dense reference tables, no forum-style text dumps). Depth comes from tone and light, not decoration; density lives in the map, not the text.",
+    "keyCharacteristics": [
+      "Obsidian, tinted-neutral surfaces with hairline borders - never pure black or pure white.",
+      "Four named continuity colors, each tied to a real narrative distinction, never applied decoratively.",
+      "Flat map, floating instruments: the map itself stays tonal and still; only overlay panels (dock, modal) lift with shadow and glow.",
+      "Monospace marks (JetBrains Mono) for data - counts, timestamps, codes; Inter for everything read as language.",
+      "44px minimum control height everywhere, unconditionally - this is a touch-first instrument."
+    ],
+    "rules": [
+      { "name": "The Load-Bearing Color Rule", "body": "A color is never added for mood. If Signal Amber, Ion Blue, Web Red, or Phase Violet appear anywhere, they are naming a specific continuity or connection in the data at that exact spot - check the meaning before adding a new hue.", "section": "colors" },
+      { "name": "The Measurement Rule", "body": "If a value is countable, timed, or coded, set it in JetBrains Mono. If it's a sentence, set it in Inter. Never mix the two within one data point.", "section": "typography" },
+      { "name": "The Flat-Map Rule", "body": "The map canvas and its nodes never cast a drop shadow. If something needs to look lifted, it isn't part of the map - it's a floating instrument, and belongs in the shadow vocabulary.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do tie every use of Signal Amber, Ion Blue, Web Red, or Phase Violet to a real continuity/connection at that spot.",
+      "Do keep the map canvas flat - tonal layering only, elevation reserved for floating panels.",
+      "Do set countable/timed/coded values in JetBrains Mono and sentences in Inter.",
+      "Do hold every interactive control to a 44px minimum touch target, unconditionally.",
+      "Do pair every color-coded distinction with a second cue (border style, dash pattern, label, icon) so the map stays legible without color."
+    ],
+    "donts": [
+      "Don't build a streaming-service poster grid - this is a map to navigate, not a catalogue to scroll.",
+      "Don't add gamified fan-tracker chrome - no badges, XP bars, streaks, or achievement animations.",
+      "Don't ship a cluttered wiki/forum layout - no dense reference tables or forum-style text dumps.",
+      "Don't use border-left/border-right as a colored accent stripe on any card or list item - the dock's full-width top bar is the one exception, and it names a continuity, not a decoration.",
+      "Don't add a drop shadow to anything on the map canvas itself.",
+      "Don't use pure #000 or #fff anywhere - every neutral is tinted obsidian."
+    ]
+  }
+}

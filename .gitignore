@@ -9,3 +9,6 @@ coverage/
 # graphify generated artifacts
 graphify-out/
 .graphify*
+
+# local agent skill installs
+.agents/
