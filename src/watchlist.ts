@@ -467,7 +467,7 @@ export const MCU_CATALOGUE: WatchTitle[] = [
     "title": "Your Friendly Neighborhood Spider-Man — Season 1",
     "year": 2025,
     "kind": "animated",
-    "phase": 6,
+    "phase": 5,
     "runtimeMinutes": null
   },
   {
@@ -475,7 +475,7 @@ export const MCU_CATALOGUE: WatchTitle[] = [
     "title": "Captain America: Brave New World",
     "year": 2025,
     "kind": "film",
-    "phase": 6,
+    "phase": 5,
     "runtimeMinutes": 118
   },
   {
@@ -483,7 +483,7 @@ export const MCU_CATALOGUE: WatchTitle[] = [
     "title": "Daredevil: Born Again — Season 1",
     "year": 2025,
     "kind": "series",
-    "phase": 6,
+    "phase": 5,
     "runtimeMinutes": null
   },
   {
@@ -491,7 +491,7 @@ export const MCU_CATALOGUE: WatchTitle[] = [
     "title": "Thunderbolts*",
     "year": 2025,
     "kind": "film",
-    "phase": 6,
+    "phase": 5,
     "runtimeMinutes": 127
   },
   {
@@ -499,7 +499,7 @@ export const MCU_CATALOGUE: WatchTitle[] = [
     "title": "Ironheart",
     "year": 2025,
     "kind": "series",
-    "phase": 6,
+    "phase": 5,
     "runtimeMinutes": null
   },
   {
