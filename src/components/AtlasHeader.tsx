@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarChart3, Route, Search, X } from 'lucide-react';
+import { BarChart3, Bookmark, Route, Search, X } from 'lucide-react';
 import { ATLAS_ROUTES, AtlasRouteId, getRoute, UNIVERSE_META } from '../atlas';
 
 interface AtlasHeaderProps {
@@ -12,6 +12,8 @@ interface AtlasHeaderProps {
   routeTraversedCount: number;
   routeTotalCount: number;
   onOpenStats: () => void;
+  onOpenWatchlist: () => void;
+  watchlistCount: number;
 }
 
 export const AtlasHeader: React.FC<AtlasHeaderProps> = ({
@@ -24,6 +26,8 @@ export const AtlasHeader: React.FC<AtlasHeaderProps> = ({
   routeTraversedCount,
   routeTotalCount,
   onOpenStats,
+  onOpenWatchlist,
+  watchlistCount,
 }) => {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const route = getRoute(activeRouteId);
@@ -149,6 +153,17 @@ export const AtlasHeader: React.FC<AtlasHeaderProps> = ({
                   );
                 })}
               </div>
+
+              <button
+                type="button"
+                onClick={onOpenWatchlist}
+                aria-label={`Open my watchlist, ${watchlistCount} selected titles`}
+                className="atlas-control flex h-11 min-w-11 items-center justify-center gap-2 px-3 font-semibold text-[var(--accent-mcu-core)]"
+              >
+                <Bookmark className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden text-sm lg:inline">My Watchlist</span>
+                <span className="text-xs" aria-hidden="true">{watchlistCount}</span>
+              </button>
 
               <button
                 type="button"
