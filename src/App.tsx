@@ -12,6 +12,9 @@ import { AtlasHeader } from './components/AtlasHeader';
 import { AtlasMap } from './components/AtlasMap';
 import { AtlasDock } from './components/AtlasDock';
 import { ArchivalStatsModal } from './components/ArchivalStatsModal';
+import { PersonalWatchlistModal } from './components/PersonalWatchlistModal';
+import { MCU_CATALOGUE, WATCHLIST_STORAGE_KEY, catalogIdForAtlasNode, loadWatchlist, setSelected, setWatchStatus } from './watchlist';
+import type { WatchStatus } from './watchlist';
 
 const STORAGE_KEY = 'chronometric_loom_nodes_v2';
 const ROUTE_KEY = 'marvel_screen_atlas_route_v1';
@@ -34,6 +37,14 @@ export default function App() {
     return INITIAL_TIMELINE_NODES;
   });
 
+  const [watchlist, setWatchlist] = useState(() => {
+    try {
+      return loadWatchlist(localStorage.getItem(WATCHLIST_STORAGE_KEY), localStorage.getItem(STORAGE_KEY));
+    } catch {
+      return loadWatchlist(null);
+    }
+  });
+
   const [activeRouteId, setActiveRouteId] = useState<AtlasRouteId>(() => {
     try {
       const savedRoute = localStorage.getItem(ROUTE_KEY) as AtlasRouteId | null;
@@ -50,6 +61,7 @@ export default function App() {
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isWatchlistOpen, setIsWatchlistOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -59,6 +71,14 @@ export default function App() {
       // Progress remains in memory when storage is unavailable.
     }
   }, [nodes]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(watchlist));
+    } catch {
+      // Local storage can be disabled; keep the current session's selections.
+    }
+  }, [watchlist]);
 
   useEffect(() => {
     try {
@@ -90,15 +110,35 @@ export default function App() {
   const hasNext = currentIndex >= 0 && currentIndex < navigationNodes.length - 1;
 
   const handleToggleStatus = (id: string) => {
+    const node = nodes.find((item) => item.id === id);
     setNodes((current) => toggleNodeSeen(current, id));
+    const catalogId = catalogIdForAtlasNode(id);
+    if (node && catalogId) {
+      setWatchlist((current) => setWatchStatus(current, catalogId, node.seen ? 'unwatched' : 'watched'));
+    }
+  };
+
+  const handleWatchlistStatus = (id: string, status: WatchStatus) => {
+    setWatchlist((current) => setWatchStatus(current, id, status));
+    const atlasNodeId = MCU_CATALOGUE.find((title) => title.id === id)?.atlasNodeId;
+    if (atlasNodeId) {
+      setNodes((current) => current.map((node) =>
+        node.id === atlasNodeId ? { ...node, seen: status === 'watched' } : node
+      ));
+    }
   };
 
   const handleBatchUpdateStatus = (universe: UniverseId | 'all', seen: boolean) => {
+    const changedNodes = nodes.filter((node) => universe === 'all' || node.uni === universe);
     setNodes((current) =>
       current.map((node) =>
         universe === 'all' || node.uni === universe ? { ...node, seen } : node
       )
     );
+    setWatchlist((current) => changedNodes.reduce((next, node) => {
+      const catalogId = catalogIdForAtlasNode(node.id);
+      return catalogId ? setWatchStatus(next, catalogId, seen ? 'watched' : 'unwatched') : next;
+    }, current));
   };
 
   const handleNavigateNode = (direction: 'prev' | 'next') => {
@@ -126,6 +166,8 @@ export default function App() {
         return;
       }
 
+      if (isWatchlistOpen) return;
+
       if (event.key === 'Escape') {
         if (isStatsOpen) {
           setIsStatsOpen(false);
@@ -149,7 +191,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeNodeId, currentIndex, isStatsOpen, navigationNodes]);
+  }, [activeNodeId, currentIndex, isStatsOpen, isWatchlistOpen, navigationNodes]);
 
   return (
     <div className="atlas-app relative h-screen w-screen overflow-hidden">
@@ -163,6 +205,8 @@ export default function App() {
         routeTraversedCount={routeTraversedCount}
         routeTotalCount={routeNodes.length}
         onOpenStats={() => setIsStatsOpen(true)}
+        onOpenWatchlist={() => setIsWatchlistOpen(true)}
+        watchlistCount={watchlist.selectedIds.length}
       />
 
       <main className="h-full w-full">
@@ -190,6 +234,14 @@ export default function App() {
         onClose={() => setIsStatsOpen(false)}
         nodes={nodes}
         onBatchUpdateStatus={handleBatchUpdateStatus}
+      />
+
+      <PersonalWatchlistModal
+        isOpen={isWatchlistOpen}
+        onClose={() => setIsWatchlistOpen(false)}
+        state={watchlist}
+        onSelect={(id, selected) => setWatchlist((current) => setSelected(current, id, selected))}
+        onSetStatus={handleWatchlistStatus}
       />
 
       <div className="sr-only" aria-live="polite" aria-atomic="true">
