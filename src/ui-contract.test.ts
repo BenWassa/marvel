@@ -36,3 +36,20 @@ test('curated route state does not define global title navigation', () => {
   assert.match(app, /getNavigableNodes\(nodes, searchQuery\)/);
   assert.doesNotMatch(app, /getNavigableNodes\(nodes, activeRouteId/);
 });
+
+test('personal watchlist has accessible removable selections and consistent modal focus', () => {
+  const panel = read('./components/PersonalWatchlistModal.tsx');
+  const header = read('./components/AtlasHeader.tsx');
+  const app = read('./App.tsx');
+
+  assert.match(panel, /role="dialog"/);
+  assert.match(panel, /aria-modal="true"/);
+  assert.match(panel, /previousFocus|prior\?\.focus\(\)/);
+  assert.match(panel, /event\.key !== 'Tab'/);
+  assert.match(panel, /onSelect\(title\.id, !selected\)/);
+  assert.match(panel, /Remove/);
+  assert.match(panel, /min-h-11/);
+  assert.match(header, /onOpenWatchlist/);
+  assert.match(app, /WATCHLIST_STORAGE_KEY/);
+  assert.match(app, /catalogIdForAtlasNode/);
+});
